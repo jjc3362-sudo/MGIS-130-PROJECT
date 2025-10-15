@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Timeline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .timeline-container {
+            width: 100%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 60px;
+            font-size: 2.5em;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 40px 0;
+        }
+
+        /* The main timeline line */
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transform: translateY(-50%);
+        }
+
+        .timeline-items {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline-item {
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Timeline dots */
+        .timeline-dot {
+            width: 24px;
+            height: 24px;
+            background: white;
+            border: 4px solid #667eea;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .timeline-item:hover .timeline-dot {
+            width: 32px;
+            height: 32px;
+            border-color: #764ba2;
+            box-shadow: 0 0 20px rgba(118, 75, 162, 0.5);
+            transform: scale(1.2);
+        }
+
+        /* Date labels */
+        .timeline-date {
+            margin-top: 20px;
+            font-weight: 600;
+            color: #667eea;
+            font-size: 0.9em;
+            transition: color 0.3s ease;
+        }
+
+        .timeline-item:hover .timeline-date {
+            color: #764ba2;
+        }
+
+        /* Text boxes that appear on hover */
+        .timeline-content {
+            position: absolute;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 250px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            border: 2px solid #667eea;
+        }
+
+        .timeline-item:hover .timeline-content {
+            opacity: 1;
+            visibility: visible;
+            top: -180px;
+        }
+
+        .timeline-content::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid #667eea;
+        }
+
+        .timeline-content h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .timeline-content p {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        /* Detail Section */
+        .detail-section {
+            margin-top: 60px;
+            padding: 40px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            min-height: 300px;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.5s ease;
+            position: relative;
+        }
+
+        .detail-section.active {
+            max-height: 2000px;
+            opacity: 1;
+            margin-top: 60px;
+        }
+
+        .detail-content {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .detail-content h2 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .detail-content p {
+            color: #555;
+            line-height: 1.8;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            background: #764ba2;
+            transform: rotate(90deg);
+        }
+
+        /* Active timeline dot */
+        .timeline-dot.active {
+            background: #667eea;
+            border-color: #764ba2;
+            box-shadow: 0 0 20px rgba(118, 75, 162, 0.8);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .timeline-container {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+                margin-bottom: 40px;
+            }
+
+            .timeline-items {
+                flex-direction: column;
+                gap: 60px;
+            }
+
+            .timeline::before {
+                left: 50%;
+                top: 0;
+                bottom: 0;
+                width: 4px;
+                height: auto;
+                transform: translateX(-50%);
+            }
+
+            .timeline-content {
+                top: 50%;
+                left: 80px;
+                transform: translateY(-50%);
+                width: 200px;
+            }
+
+            .timeline-item:hover .timeline-content {
+                top: 50%;
+                left: 100px;
+            }
+
+            .timeline-content::after {
+                bottom: 50%;
+                left: -10px;
+                transform: translateY(50%);
+                border-top: 10px solid transparent;
+                border-bottom: 10px solid transparent;
+                border-right: 10px solid #667eea;
+                border-left: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="timeline-container">
+        <h1>Interactive Timeline</h1>
+        
+        <div class="timeline">
+            <div class="timeline-items" id="timelineItems">
+                <!-- Timeline items will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Detail Section -->
+        <div class="detail-section" id="detailSection">
+            <button class="close-btn" id="closeBtn">&times;</button>
+            <div class="detail-content" id="detailContent">
+                <h2 id="detailTitle">Select a timeline point</h2>
+                <p id="detailText">Click on any point in the timeline above to view detailed information.</p>
+            </div>
+        </div>
+    </div>
