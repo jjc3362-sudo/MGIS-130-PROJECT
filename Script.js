@@ -1,5 +1,4 @@
-
-    // Timeline data
+// Timeline data
     const timelineData = [
         {
             date: "2020",
@@ -207,5 +206,5 @@
         });
         
         // Close button event listener
-        document.getElementById('closeBtn').addEventListener('click', closeDetail);
-    });
+        document.getElementById('closeBtn').addEventListener('click', closeDetail);   
+     });    
